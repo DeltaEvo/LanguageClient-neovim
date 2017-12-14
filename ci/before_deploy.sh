@@ -20,7 +20,11 @@ package() {
 
     cross build --target $TARGET --release
 
-    cp target/$TARGET/release/$CRATE_NAME $stage/
+    if [[ $TARGET =~ .*windows.* ]]
+        cp target/$TARGET/release/$CRATE_NAME.exe $stage/
+    else
+        cp target/$TARGET/release/$CRATE_NAME $stage/
+    fi
 
     cd $stage
     tar czf $src/$CRATE_NAME-$TRAVIS_TAG-$TARGET.tar.gz *
@@ -33,7 +37,11 @@ release_tag() {
     case $TRAVIS_OS_NAME in
         linux)
             cross build --target $TARGET --release
-            cp --force target/$TARGET/release/$CRATE_NAME bin/
+            if [[ $TARGET =~ .*windows.* ]]
+                cp --force target/$TARGET/release/$CRATE_NAME.exe bin/
+            else
+                cp --force target/$TARGET/release/$CRATE_NAME bin/
+            fi
             ;;
         osx)
             make release
