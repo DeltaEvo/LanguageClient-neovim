@@ -1,8 +1,8 @@
 if $LANGUAGECLIENT_DEBUG
-    if $CARGO_TARGET_DIR
-        let s:command = [$CARGO_TARGET_DIR . '/debug/languageclient']
-    else
+    if empty($CARGO_TARGET_DIR)
         let s:command = [expand('<sfile>:p:h:h') . '/target/debug/languageclient']
+    else
+        let s:command = [$CARGO_TARGET_DIR . '/debug/languageclient']
     endif
 else
     let s:command = [expand('<sfile>:p:h:h') . '/bin/languageclient']
