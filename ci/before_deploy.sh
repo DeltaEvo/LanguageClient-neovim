@@ -19,12 +19,7 @@ package() {
     test -f Cargo.lock || cargo generate-lockfile
 
     cross build --target $TARGET --release
-
-    if [[ $TARGET =~ .*windows.* ]]; then
-        cp target/$TARGET/release/$CRATE_NAME.exe $stage/
-    else
-        cp target/$TARGET/release/$CRATE_NAME $stage/
-    fi
+    cp target/$TARGET/release/$BIN_NAME $stage/
 
     cd $stage
     tar czf $src/$CRATE_NAME-$TRAVIS_TAG-$TARGET.tar.gz *
@@ -37,11 +32,7 @@ release_tag() {
     case $TRAVIS_OS_NAME in
         linux)
             cross build --target $TARGET --release
-            if [[ $TARGET =~ .*windows.* ]]; then
-                cp --force target/$TARGET/release/$CRATE_NAME.exe bin/
-            else
-                cp --force target/$TARGET/release/$CRATE_NAME bin/
-            fi
+            cp --force target/$TARGET/release/$BIN_NAME bin/
             ;;
         osx)
             make release
@@ -51,7 +42,7 @@ release_tag() {
     git config --global user.email "travis@travis-ci.org"
     git config --global user.name "Travis CI"
 
-    git add --force bin/$CRATE_NAME
+    git add --force bin/$BIN_NAME
     git commit --message "Add binary for $TRAVIS_TAG-$TARGET."
     tagname="binary-$TRAVIS_TAG-$TARGET"
     git tag --force "$tagname"
@@ -60,6 +51,12 @@ release_tag() {
 
 TARGETS=(${TARGETS//:/ })
 for TARGET in "${TARGETS[@]}"; do
+    if [[ $TARGET =~ .*windows.* ]]; then
+        BIN_NAME=$CRATE_NAME.exe
+    else
+        BIN_NAME=$CRATE_NAME
+    fi
+
     release_tag $TARGET
     package $TARGET
 done
