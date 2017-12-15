@@ -20,7 +20,7 @@ package() {
 
     cross build --target $TARGET --release
 
-    if [[ $TARGET =~ .*windows.* ]]
+    if [[ $TARGET =~ .*windows.* ]]; then
         cp target/$TARGET/release/$CRATE_NAME.exe $stage/
     else
         cp target/$TARGET/release/$CRATE_NAME $stage/
@@ -37,7 +37,7 @@ release_tag() {
     case $TRAVIS_OS_NAME in
         linux)
             cross build --target $TARGET --release
-            if [[ $TARGET =~ .*windows.* ]]
+            if [[ $TARGET =~ .*windows.* ]]; then
                 cp --force target/$TARGET/release/$CRATE_NAME.exe bin/
             else
                 cp --force target/$TARGET/release/$CRATE_NAME bin/
